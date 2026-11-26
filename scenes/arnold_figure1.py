@@ -160,9 +160,10 @@ class ArnoldFigure1(ThreeDScene):
         self.play(
             FadeOut(sphere), FadeOut(equator), FadeOut(point_sphere),
             FadeOut(proj_line),
-            self.camera.animate.set_euler_angles(phi=0, theta=-PI / 2),
-            run_time=2,
+            run_time=1,
         )
+        # Drop camera to top-down view:
+        self.move_camera(phi=0, theta=-PI / 2, run_time=2)
 
         # Now we're looking straight down at the plane
         # The equator projection is a circle — in Cartesian (y₁, y₂)
