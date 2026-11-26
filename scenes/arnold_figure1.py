@@ -85,66 +85,99 @@ class ArnoldFigure1(ThreeDScene):
         fold_label.to_corner(UR)
         self.play(Write(fold_label))
 
-        # === PHASE 2: Tracing point along x₁ ===
+        # === PHASE 2: Tracing point along x₁ with trails ===
 
-        # A point that moves along a meridian (great circle in x₁ direction)
-        # Parametrize: start at north pole, trace down over equator to south
+        # Helper: sphere point and its projection for a given latitude v
+        def sphere_pt(v):
+            return np.array([np.cos(v), 0, np.sin(v) + 1.5])
+        def proj_pt(v):
+            return np.array([np.cos(v), 0, 0])
+
         trace_param = ValueTracker(-PI / 2 + 0.1)
 
-        # The point on the sphere
+        # The moving points
         point_sphere = always_redraw(lambda: Dot3D(
-            point=np.array([
-                np.cos(0) * np.cos(trace_param.get_value()),
-                np.sin(0) * np.cos(trace_param.get_value()),
-                np.sin(trace_param.get_value()) + 1.5,
-            ]),
-            color=YELLOW,
-            radius=0.08,
+            point=sphere_pt(trace_param.get_value()),
+            color=YELLOW, radius=0.08,
         ))
-
-        # Its projection on the plane
         point_proj = always_redraw(lambda: Dot3D(
-            point=np.array([
-                np.cos(0) * np.cos(trace_param.get_value()),
-                np.sin(0) * np.cos(trace_param.get_value()),
-                0,
-            ]),
-            color=YELLOW,
-            radius=0.06,
+            point=proj_pt(trace_param.get_value()),
+            color=YELLOW, radius=0.06,
         ))
 
-        # The projection line (vertical dashed)
+        # Vertical projection line (connects sphere point to plane point)
         proj_line = always_redraw(lambda: DashedLine(
-            start=np.array([
-                np.cos(0) * np.cos(trace_param.get_value()),
-                np.sin(0) * np.cos(trace_param.get_value()),
-                np.sin(trace_param.get_value()) + 1.5,
-            ]),
-            end=np.array([
-                np.cos(0) * np.cos(trace_param.get_value()),
-                np.sin(0) * np.cos(trace_param.get_value()),
-                0,
-            ]),
-            color=YELLOW_A,
-            stroke_width=1,
+            start=sphere_pt(trace_param.get_value()),
+            end=proj_pt(trace_param.get_value()),
+            color=YELLOW_A, stroke_width=1,
         ))
+
+        # TRAILS: build as traced paths
+        # Sphere trail (dashed — always one-to-one on the sphere)
+        sphere_trail = TracedPath(
+            lambda: sphere_pt(trace_param.get_value()),
+            stroke_color=YELLOW, stroke_width=2,
+            dissipating_time=None,
+        )
+        sphere_trail.set_stroke(opacity=0.6)
+
+        # Plane trail: DASHED on first pass (north → equator, projection moves inward)
+        # then SOLID on second pass (equator → south, retraces same path = fold!)
+        # We achieve this by drawing two separate trails for the two halves.
+
+        # First half trail (north pole to equator): dashed on the plane
+        proj_trail_first = TracedPath(
+            lambda: proj_pt(trace_param.get_value()),
+            stroke_color=ORANGE, stroke_width=2,
+            dissipating_time=None,
+        )
 
         self.play(Create(point_sphere), Create(point_proj), Create(proj_line))
+        self.add(sphere_trail, proj_trail_first)
 
-        # Trace from north pole down to south pole
-        # The projection moves inward (toward center) as the point
-        # crosses the equator, then back out — the FOLD
+        # PASS 1: North pole → equator (v goes from -π/2 to 0)
+        # Projection moves from center outward to r=1
+        self.play(
+            trace_param.animate.set_value(0),
+            run_time=3,
+            rate_func=linear,
+        )
+        self.wait(0.5)
+
+        # At the equator — pause to mark the fold
+        equator_note = Text("equator — the fold", font_size=16, color=RED)
+        self.add_fixed_in_frame_mobjects(equator_note)
+        equator_note.to_corner(DL)
+        self.play(Write(equator_note))
+        self.wait(1)
+        self.play(FadeOut(equator_note))
+
+        # Remove the first trail, start the second (which will overdraw = solidify)
+        self.remove(proj_trail_first)
+
+        # Second half trail: solid, overwrites the dashed first pass
+        proj_trail_second = TracedPath(
+            lambda: proj_pt(trace_param.get_value()),
+            stroke_color=YELLOW, stroke_width=4,  # thicker + brighter = solid overdraw
+            dissipating_time=None,
+        )
+        self.add(proj_trail_second)
+
+        # PASS 2: Equator → south pole (v goes from 0 to +π/2)
+        # Projection now moves BACK inward — retracing the same path on the plane!
+        # The solid trail fills in over the dashed one = visual fold
         self.play(
             trace_param.animate.set_value(PI / 2 - 0.1),
-            run_time=6,
+            run_time=3,
             rate_func=linear,
         )
         self.wait(1)
 
-        # Annotation: the projection reverses at the equator
+        # Annotation
         note1 = Text(
-            "At the equator: projection reverses\n"
-            "→ two points on sphere map to one on plane\n"
+            "The projection retraces its path\n"
+            "→ dashed (first pass) becomes solid (second pass)\n"
+            "→ two sphere-points map to one plane-point\n"
             "→ this is the fold singularity",
             font_size=14,
         )
@@ -159,7 +192,8 @@ class ArnoldFigure1(ThreeDScene):
         # Fade the 3D sphere, focus on the projection plane
         self.play(
             FadeOut(sphere), FadeOut(equator), FadeOut(point_sphere),
-            FadeOut(proj_line),
+            FadeOut(proj_line), FadeOut(sphere_trail),
+            FadeOut(proj_trail_second), FadeOut(point_proj),
             run_time=1,
         )
         # Drop camera to top-down view:
