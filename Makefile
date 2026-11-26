@@ -80,6 +80,25 @@ $(SCENES):
 play-%:
 	$(MANIM) -p $(QL) $($*_FILE) $($*_CLASS)
 
+# ─── Viewing ──────────────────────────────────────────────
+
+# Open all rendered previews in the default media player:
+view_preview:
+	@for f in $(MEDIA_DIR)/videos/*/480p15/*.mp4; do \
+		echo "Opening: $$f"; \
+		xdg-open "$$f" 2>/dev/null & \
+	done
+
+view_hd:
+	@for f in $(MEDIA_DIR)/videos/*/1080p60/*.mp4; do \
+		echo "Opening: $$f"; \
+		xdg-open "$$f" 2>/dev/null & \
+	done
+
+# View a single scene's latest render:
+view-%:
+	@find $(MEDIA_DIR)/videos -name "*.mp4" -path "*$**" | sort | tail -1 | xargs xdg-open 2>/dev/null
+
 # ─── Housekeeping ─────────────────────────────────────────
 
 clean:
