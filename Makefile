@@ -99,6 +99,52 @@ view_hd:
 view-%:
 	@find $(MEDIA_DIR)/videos -name "*.mp4" -path "*$**" | sort | tail -1 | xargs xdg-open 2>/dev/null
 
+# ─── Concatenation ────────────────────────────────────────
+
+# Scene order for the concatenated film:
+FILM_ORDER = fold figure1 cusp cusp_trace relu horizon
+
+# Build a single mp4 from all scenes (preview quality):
+film_preview: preview
+	@echo "Concatenating preview scenes into film..."
+	@mkdir -p $(MEDIA_DIR)/film
+	@rm -f /tmp/manim_concat_list.txt
+	@for s in $(FILM_ORDER); do \
+		f=$$(find $(MEDIA_DIR)/videos -name "*.mp4" -path "*480p*" -path "*$$($${s}_CLASS)*" | sort | tail -1); \
+		if [ -n "$$f" ]; then echo "file '$$f'" >> /tmp/manim_concat_list.txt; echo "  + $$f"; fi; \
+	done
+	ffmpeg -y -f concat -safe 0 -i /tmp/manim_concat_list.txt -c copy $(MEDIA_DIR)/film/catastrophe_theory_preview.mp4
+	@echo "Film: $(MEDIA_DIR)/film/catastrophe_theory_preview.mp4"
+
+# Build a single mp4 from all scenes (HD quality):
+film_hd: hd
+	@echo "Concatenating HD scenes into film..."
+	@mkdir -p $(MEDIA_DIR)/film
+	@rm -f /tmp/manim_concat_list.txt
+	@for s in $(FILM_ORDER); do \
+		f=$$(find $(MEDIA_DIR)/videos -name "*.mp4" -path "*1080p*" -path "*$$($${s}_CLASS)*" | sort | tail -1); \
+		if [ -n "$$f" ]; then echo "file '$$f'" >> /tmp/manim_concat_list.txt; echo "  + $$f"; fi; \
+	done
+	ffmpeg -y -f concat -safe 0 -i /tmp/manim_concat_list.txt -c copy $(MEDIA_DIR)/film/catastrophe_theory_hd.mp4
+	@echo "Film: $(MEDIA_DIR)/film/catastrophe_theory_hd.mp4"
+
+# Concatenate from whatever's already rendered (don't re-render):
+film:
+	@echo "Concatenating best available renders into film..."
+	@mkdir -p $(MEDIA_DIR)/film
+	@rm -f /tmp/manim_concat_list.txt
+	@for s in $(FILM_ORDER); do \
+		f=$$(find $(MEDIA_DIR)/videos -name "*.mp4" -path "*$$($${s}_CLASS)*" | sort | tail -1); \
+		if [ -n "$$f" ]; then echo "file '$$f'" >> /tmp/manim_concat_list.txt; echo "  + $$f"; fi; \
+	done
+	ffmpeg -y -f concat -safe 0 -i /tmp/manim_concat_list.txt -c copy $(MEDIA_DIR)/film/catastrophe_theory.mp4
+	@echo "Film: $(MEDIA_DIR)/film/catastrophe_theory.mp4"
+
+view_film:
+	@f=$$(ls -t $(MEDIA_DIR)/film/*.mp4 2>/dev/null | head -1); \
+	if [ -n "$$f" ]; then xdg-open "$$f" 2>/dev/null; \
+	else echo "No film yet — run 'make film' first"; fi
+
 # ─── Housekeeping ─────────────────────────────────────────
 
 clean:
