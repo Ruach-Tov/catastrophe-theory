@@ -125,10 +125,10 @@ class ArnoldFigure1(ThreeDScene):
         # then SOLID on second pass (equator → south, retraces same path = fold!)
         # We achieve this by drawing two separate trails for the two halves.
 
-        # First half trail (north pole to equator): dashed on the plane
+        # First half trail (north pole to equator): yellow on the plane
         proj_trail_first = TracedPath(
             lambda: proj_pt(trace_param.get_value()),
-            stroke_color=ORANGE, stroke_width=2,
+            stroke_color=YELLOW, stroke_width=2,
             dissipating_time=None,
         )
 
