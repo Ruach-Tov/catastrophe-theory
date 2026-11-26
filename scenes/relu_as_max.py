@@ -14,21 +14,25 @@ Reference: Arnol'd, Catastrophe Theory, Ch. 10
            (Singularities in Optimization Problems: the Maximum Function)
 """
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ruach_manim import RuachScene2D, ArnoldColors, attribution, reading_time
 from manim import *
 import numpy as np
 
 
-class ReLUAsMax(Scene):
+class ReLUAsMax(RuachScene2D):
     """ReLU = max(0, x), shown as two competing functions."""
 
-    def construct(self):
-        title = Text("ReLU as Arnol'd's Maximum Function", font_size=32)
-        subtitle = MathTex(r"\text{ReLU}(x) = \max(0, x)", font_size=28)
-        subtitle.next_to(title, DOWN)
+    ATTRIBUTION = attribution(
+        authors=["Heath Hunnicutt", "Mavchin"],
+        reference="Arnol'd, Catastrophe Theory, Ch. 10",
+        date="2026-11-26",
+        note="ReLU as the maximum function",
+    )
 
-        self.play(Write(title), Write(subtitle))
-        self.wait(1)
-        self.play(FadeOut(title), FadeOut(subtitle))
+    def construct(self):
+        self.show_attribution()
 
         axes = Axes(
             x_range=[-3, 3, 1], y_range=[-1, 3, 1],
@@ -66,13 +70,13 @@ class ReLUAsMax(Scene):
         self.play(Create(sing_dot), Write(sing_label))
         self.wait(2)
 
-        # Annotation:
-        note = Text(
+        # Annotation — display time from information content:
+        note_text = (
             "The kink at x=0 is structurally stable\n"
             "— it cannot be removed by small perturbation.\n"
-            "Every ReLU neuron creates one of these folds.",
-            font_size=16,
+            "Every ReLU neuron creates one of these folds."
         )
+        note = Text(note_text, font_size=16)
         note.to_corner(DR)
         self.play(Write(note))
-        self.wait(3)
+        self.wait(reading_time(note_text))

@@ -1,0 +1,99 @@
+# Catastrophe Theory Animations — Build System
+#
+# Usage:
+#   make all        — render all scenes at medium quality
+#   make preview    — render all at low quality (fast iteration)
+#   make hd         — render all at 1080p60
+#   make <scene>    — render one scene (e.g., make fold)
+#   make clean      — remove rendered media
+#
+# Individual scenes:
+#   make fold cusp relu horizon figure1
+#
+# Pace control (for reading time):
+#   PACE=0.7 make all   — expert pace (faster text)
+#   PACE=1.5 make all   — presentation pace (slower text)
+
+MANIM = manim
+SCENE_DIR = scenes
+MEDIA_DIR = media
+
+# Quality flags
+QL = -ql    # 480p15 — fast preview
+QM = -qm    # 720p30 — medium (default)
+QH = -qh    # 1080p60 — high quality
+QK = -qk    # 2160p60 — 4K
+
+# Default quality
+Q = $(QM)
+
+# All scenes and their classes:
+SCENES = \
+	fold \
+	cusp \
+	cusp_trace \
+	relu \
+	figure1 \
+	horizon
+
+# Scene file → class mapping:
+fold_FILE      = $(SCENE_DIR)/whitney_fold.py
+fold_CLASS     = FoldSingularity
+
+cusp_FILE      = $(SCENE_DIR)/whitney_cusp.py
+cusp_CLASS     = CuspSingularity
+
+cusp_trace_FILE  = $(SCENE_DIR)/cusp_tracing.py
+cusp_trace_CLASS = CuspTracing
+
+relu_FILE      = $(SCENE_DIR)/relu_as_max.py
+relu_CLASS     = ReLUAsMax
+
+figure1_FILE   = $(SCENE_DIR)/arnold_figure1.py
+figure1_CLASS  = ArnoldFigure1
+
+horizon_FILE   = $(SCENE_DIR)/horizon_max_function.py
+horizon_CLASS  = HorizonMaxFunction
+
+# ─── Targets ──────────────────────────────────────────────
+
+.PHONY: all preview hd 4k clean $(SCENES)
+
+all: $(SCENES)
+
+preview:
+	$(MAKE) Q="$(QL)" all
+
+hd:
+	$(MAKE) Q="$(QH)" all
+
+4k:
+	$(MAKE) Q="$(QK)" all
+
+# Individual scene targets:
+$(SCENES):
+	$(MANIM) $(Q) $($@_FILE) $($@_CLASS)
+
+# ─── Convenience aliases ─────────────────────────────────
+
+# Render and auto-open (-p flag):
+play-%:
+	$(MANIM) -p $(QL) $($*_FILE) $($*_CLASS)
+
+# ─── Housekeeping ─────────────────────────────────────────
+
+clean:
+	rm -rf $(MEDIA_DIR)
+
+# List available scenes:
+list:
+	@echo "Available scenes:"
+	@for s in $(SCENES); do \
+		echo "  make $$s      — $${s}_CLASS"; \
+	done
+	@echo ""
+	@echo "Shortcuts:"
+	@echo "  make play-fold   — render + open fold"
+	@echo "  make preview     — all scenes at 480p (fast)"
+	@echo "  make hd          — all scenes at 1080p60"
+	@echo "  make 4k          — all scenes at 4K"
