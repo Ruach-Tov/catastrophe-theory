@@ -152,13 +152,13 @@ class ArnoldFigure1(ThreeDScene):
         self.wait(1)
         self.play(FadeOut(equator_note))
 
-        # Remove the first trail, start the second (which will overdraw = solidify)
-        self.remove(proj_trail_first)
+        # Keep first trail visible — the second pass draws OVER it, making it heavier.
+        # The first trail stays as a light trace; the second adds weight.
 
-        # Second half trail: solid, overwrites the dashed first pass
+        # Second half trail: thicker + brighter = "filled in" overdraw
         proj_trail_second = TracedPath(
             lambda: proj_pt(trace_param.get_value()),
-            stroke_color=YELLOW, stroke_width=4,  # thicker + brighter = solid overdraw
+            stroke_color=YELLOW, stroke_width=4,
             dissipating_time=None,
         )
         self.add(proj_trail_second)
@@ -193,7 +193,7 @@ class ArnoldFigure1(ThreeDScene):
         self.play(
             FadeOut(sphere), FadeOut(equator), FadeOut(point_sphere),
             FadeOut(proj_line), FadeOut(sphere_trail),
-            FadeOut(proj_trail_second), FadeOut(point_proj),
+            FadeOut(proj_trail_first), FadeOut(proj_trail_second), FadeOut(point_proj),
             run_time=1,
         )
         # Drop camera to top-down view:
