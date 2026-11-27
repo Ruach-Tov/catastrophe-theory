@@ -35,7 +35,8 @@ SCENES = \
 	relu \
 	figure1 \
 	horizon \
-	earth_fig1
+	earth_fig1 \
+	geo_fig1
 
 # Scene file → class mapping:
 fold_FILE      = $(SCENE_DIR)/whitney_fold.py
@@ -58,6 +59,9 @@ horizon_CLASS  = HorizonMaxFunction
 
 earth_fig1_FILE  = $(SCENE_DIR)/earth_figure1.py
 earth_fig1_CLASS = EarthArnoldFigure1
+
+geo_fig1_FILE    = $(SCENE_DIR)/geodesic_figure1.py
+geo_fig1_CLASS   = GeodesicFigure1
 
 # ─── Targets ──────────────────────────────────────────────
 
