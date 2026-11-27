@@ -32,13 +32,12 @@ class GeodesicFigure1(ThreeDScene):
     """Arnol'd Figure 1 with a tessellated geodesic Earth."""
 
     def construct(self):
-        title = Text("Arnol'd Figure 1 — Geodesic Earth", font_size=32)
-        subtitle = Text("320 tiles project to a plane — the fold at the limb", font_size=18)
-        subtitle.next_to(title, DOWN)
-        self.add_fixed_in_frame_mobjects(title, subtitle)
-        self.play(Write(title), Write(subtitle))
-        self.wait(reading_time("Arnol'd Figure 1 Geodesic Earth 320 tiles project to a plane the fold at the limb"))
-        self.play(FadeOut(title), FadeOut(subtitle))
+        title = Text("Arnol'd Fig 1 — Geodesic Earth", font_size=32)
+        self.add_fixed_in_frame_mobjects(title)
+        self.play(Write(title))
+        # "Arnol'd Fig 1" is low-surprise (introduced earlier); "Geodesic Earth" carries the new info:
+        self.wait(reading_time("Geodesic Earth"))
+        self.play(FadeOut(title))
 
         self.set_camera_orientation(phi=65 * DEGREES, theta=-30 * DEGREES)
 
