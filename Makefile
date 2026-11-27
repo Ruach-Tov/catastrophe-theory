@@ -39,7 +39,9 @@ SCENES = \
 	geo_fig1 \
 	umap \
 	earth_pca \
-	pca_umap
+	pca_umap \
+	fig29 \
+	pool
 
 # Scene file → class mapping:
 fold_FILE      = $(SCENE_DIR)/whitney_fold.py
@@ -74,6 +76,12 @@ earth_pca_CLASS = EarthPCA
 
 pca_umap_FILE   = $(SCENE_DIR)/pca_vs_umap.py
 pca_umap_CLASS  = PCAvsUMAP
+
+fig29_FILE      = $(SCENE_DIR)/arnold_figure29.py
+fig29_CLASS     = ArnoldFigure29
+
+pool_FILE       = $(SCENE_DIR)/pool_caustics.py
+pool_CLASS      = PoolCaustics
 
 # ─── Targets ──────────────────────────────────────────────
 
