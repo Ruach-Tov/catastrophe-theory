@@ -150,6 +150,9 @@ view_film:
 earth:
 	python3 examples/earth_projection.py
 
+earth_real:
+	python3 examples/earth_realistic.py
+
 # ─── Housekeeping ─────────────────────────────────────────
 
 clean:
