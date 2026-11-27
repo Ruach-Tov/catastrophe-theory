@@ -36,7 +36,8 @@ SCENES = \
 	figure1 \
 	horizon \
 	earth_fig1 \
-	geo_fig1
+	geo_fig1 \
+	umap
 
 # Scene file → class mapping:
 fold_FILE      = $(SCENE_DIR)/whitney_fold.py
@@ -62,6 +63,9 @@ earth_fig1_CLASS = EarthArnoldFigure1
 
 geo_fig1_FILE    = $(SCENE_DIR)/geodesic_figure1.py
 geo_fig1_CLASS   = GeodesicFigure1
+
+umap_FILE     = $(SCENE_DIR)/umap_projection.py
+umap_CLASS    = UMAPProjection
 
 # ─── Targets ──────────────────────────────────────────────
 
