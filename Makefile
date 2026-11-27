@@ -145,6 +145,11 @@ view_film:
 	if [ -n "$$f" ]; then xdg-open "$$f" 2>/dev/null; \
 	else echo "No film yet — run 'make film' first"; fi
 
+# ─── Examples (Python, not manim) ─────────────────────────
+
+earth:
+	python3 examples/earth_projection.py
+
 # ─── Housekeeping ─────────────────────────────────────────
 
 clean:
