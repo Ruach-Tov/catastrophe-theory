@@ -34,7 +34,8 @@ SCENES = \
 	cusp_trace \
 	relu \
 	figure1 \
-	horizon
+	horizon \
+	earth_fig1
 
 # Scene file → class mapping:
 fold_FILE      = $(SCENE_DIR)/whitney_fold.py
@@ -54,6 +55,9 @@ figure1_CLASS  = ArnoldFigure1
 
 horizon_FILE   = $(SCENE_DIR)/horizon_max_function.py
 horizon_CLASS  = HorizonMaxFunction
+
+earth_fig1_FILE  = $(SCENE_DIR)/earth_figure1.py
+earth_fig1_CLASS = EarthArnoldFigure1
 
 # ─── Targets ──────────────────────────────────────────────
 
