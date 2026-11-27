@@ -38,7 +38,8 @@ SCENES = \
 	earth_fig1 \
 	geo_fig1 \
 	umap \
-	earth_pca
+	earth_pca \
+	pca_umap
 
 # Scene file → class mapping:
 fold_FILE      = $(SCENE_DIR)/whitney_fold.py
@@ -70,6 +71,9 @@ umap_CLASS    = UMAPProjection
 
 earth_pca_FILE  = $(SCENE_DIR)/earth_pca.py
 earth_pca_CLASS = EarthPCA
+
+pca_umap_FILE   = $(SCENE_DIR)/pca_vs_umap.py
+pca_umap_CLASS  = PCAvsUMAP
 
 # ─── Targets ──────────────────────────────────────────────
 
